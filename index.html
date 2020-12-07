@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Апартаменты Тайланда</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css?family=Cuprum:400,700&amp;subset=cyrillic" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Condensed:400,500,700&amp;subset=cyrillic" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&amp;subset=cyrillic" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Istok+Web:400,700&amp;subset=cyrillic" rel="stylesheet">
+    <script src="js/send_forms.js" type="text/javascript"></script>
+    
+    <link href="css/datepicker.min.css" rel="stylesheet" type="text/css">
+    <script src="js/datepicker.min.js"></script>
+    
+    <script type="text/javascript">
+        
+        //Скрипт плавного перехода по якорям
+        $(document).ready(function() {
+            $('a[href^="#"]').click(function () {
+                $(".DropDown_menu").css("display", "none");
+                elementClick = $(this).attr("href");
+                destination = $(elementClick).offset().top;
+                if($.browser.safari){
+                    $('body').animate( { scrollTop: destination }, 500 );
+                }else{
+                    $('html').animate( { scrollTop: destination }, 500 );
+                }
+                return false;
+            });
+        });
+        
+        // установим обработчик события resize (изменение размеров экрана)
+        $(window).resize(function(){   
+            $(document).ready(function() {
+                if($(document).width() >= '520'){
+                    $(".DropDown_menu").css("display", "none");
+                }
+            });
+        });
+        // вызовем событие resize
+        $(window).resize();
+        //выпадающее меню
+        $(document).ready(function(){
+            $(".mob_menu_butt").click(function(){
+                $(".DropDown_menu").slideToggle(100);
+                return false;
+            });
+        });
+        
+        //Кнопка в уголке
+        function WidthWindow(){
+            alert($(document).width());
+        }
+        
+        //Кнопка "Расчитать стоимость" скрывается, доп. поле открывается
+        function Butt_Hide(apart){
+            if(apart == 'ap1'){
+                $(".Ap1_batt").css("display","none");
+                $(".Ap1_calc").css("display","block");
+                $(".Ap2_batt").css("display","block");
+                $(".Ap2_calc").css("display","none");
+                $(".Ap_text_pole input").val("");
+                $(".Ap2_cost").html('$--');
+            }
+            
+            if(apart == 'ap2'){
+                $(".Ap2_batt").css("display","none");
+                $(".Ap2_calc").css("display","block");
+                $(".Ap1_batt").css("display","block");
+                $(".Ap1_calc").css("display","none");
+                $(".Ap_text_pole input").val("");
+                $(".Ap1_cost").html('$--');
+            }
+        }
+        
+        //Скрипт открывает/закрывает модальные окна
+        $(document).ready(function() { // зaпускaем скрипт пoсле зaгрузки всех элементoв
+            /* зaсунем срaзу все элементы в переменные, чтoбы скрипту не прихoдилoсь их кaждый рaз искaть при кликaх */
+            var overlay = $('#overlay'); // пoдлoжкa, дoлжнa быть oднa нa стрaнице
+            var open_modal = $('.open_modal'); // все ссылки, кoтoрые будут oткрывaть oкнa
+            var close = $('.modal_close, #overlay, .modal_div_IMG'); // все, чтo зaкрывaет мoдaльнoе oкнo, т.е. крестик и oверлэй-пoдлoжкa
+            var modal = $('.modal_div'); // все скрытые мoдaльные oкнa
+            var modalIMG = $('.modal_div_IMG');
+            var modalCat =$('.Cat_modal_div');
+
+            open_modal.click( function(event){ // лoвим клик пo ссылке с клaссoм open_modal
+                event.preventDefault(); // вырубaем стaндaртнoе пoведение
+                var div = $(this).attr('href'); // вoзьмем стрoку с селектoрoм у кликнутoй ссылки
+                overlay.fadeIn(300, //пoкaзывaем oверлэй
+                    function(){ // пoсле oкoнчaния пoкaзывaния oверлэя
+                    $(div) // берем стрoку с селектoрoм и делaем из нее jquery oбъект
+                        .css('display', 'block') 
+                        .animate({opacity: 1, top: '50%'}, 200); // плaвнo пoкaзывaем
+                });
+            });
+
+            close.click( function(){ // лoвим клик пo крестику или oверлэю
+            modal // все мoдaльные oкнa
+             .animate({opacity: 0, top: '45%'}, 200, // плaвнo прячем
+                 function(){ // пoсле этoгo 
+                    $(this).css('display', 'none');
+                    overlay.fadeOut(300); // прячем пoдлoжку
+                    
+                 }
+             );
+            });
+            close.click( function(){
+            modalIMG.animate({opacity: 0, top: '45%'}, 200, function(){ 
+                    $(this).css('display', 'none');
+                    overlay.fadeOut(300);
+                    
+                 }
+             );
+            });
+            close.click( function(){modalCat.animate({opacity: 0, top: '45%'}, 200, function(){ 
+                    $(this).css('display', 'none');
+                    overlay.fadeOut(300);
+                    $("#ModButt_kit").remove();
+                 }
+             );
+            });
+        });
+        
+        //Обработка текстовых полей с датами в Апартаментах
+        $(document).ready(function() {
+            //Слушаем тектовые поля при нажатии на кнопку "Расчитайте стоимость проживания" (Апартамент №1)
+            $('#Ap1_Butt1').click( function(){
+                var time01 = setInterval(function(){
+                    if($('#Ap1_date1').val() != ''  && $('#Ap1_date2').val() != ''){
+                        Count_costA1();
+                    }else{
+                        $(".Ap1_cost").html('$--');
+                    }
+                },100);
+            });
+            //Слушаем тектовые поля при нажатии на кнопку "Расчитайте стоимость проживания" (Апартамент №2)
+            $('#Ap2_Butt1').click( function(){
+                var time02 = setInterval(function(){
+                    if($('#Ap2_date1').val() != ''  && $('#Ap2_date2').val() != ''){
+                        Count_costA2();
+                    }else{
+                        $(".Ap2_cost").html('$--');
+                    }
+                },100);
+            });
+            
+            //Показать блок с календарём
+            function OpenCalendar(){
+                $('.datepickers-container').css("display", "block");
+            }
+            //Скрыть блок с календарём
+            function CloseCalendar(){
+                $('.datepickers-container').css("display", "none");
+            }
+            
+            //Обработка  полей с датами в Апартаментах №1
+            $('#Ap1_date1').focus( function(){
+                $('.qasw34').click( function(){
+                    CloseCalendar();
+                    $('#Ap1_date1').blur();
+                    OpenCalendar();
+                    if($('#Ap1_date2').val() == ''){
+                        $('#Ap1_date2').focus();
+                    }
+                });
+            });
+            $('#Ap1_date2').focus( function(){
+                $('.qasw34').click( function(){
+                    CloseCalendar();
+                    $('#Ap1_date2').blur();
+                    OpenCalendar();
+                });
+                
+            });
+            
+            //Обработка  полей с датами в Апартаментах №2
+            $('#Ap2_date1').focus( function(){
+                $('.qasw34').click( function(){
+                    CloseCalendar();
+                    $('#Ap2_date1').blur();
+                    OpenCalendar();
+                    if($('#Ap2_date2').val() == ''){
+                        $('#Ap2_date2').focus();
+                    }
+                });
+            });
+            $('#Ap2_date2').focus( function(){
+                $('.qasw34').click( function(){
+                    CloseCalendar();
+                    $('#Ap2_date2').blur();
+                    OpenCalendar();
+                });
+                
+            });
+        }); 
+        
+    </script>
+    
+    
+</head>
+<body>
+    <div id="button_width" onclick="WidthWindow();"></div>
+    
+    <div class="header">
+        <div class="Head_content">
+            <div class="Head_left">
+                <a href="#"><img src="img/logotip.png" alt="логотип"></a>
+            </div>
+            <div class="Head_right">
+                <div class="Head_numbers">8(937)000-00-20</div>
+                <div class="Head_butt"><a href="#modal4" class="open_modal">ЗАКАЗАТЬ ОБРАТНЫЙ ЗВОНОК</a></div>
+            </div>
+            <div class="Head_menu">
+                <div class="H_el_menu"><a href="#advantages">ПРЕИМУЩЕСТВА</a></div>
+                <div class="H_el_menu"><a href="#services">УСЛУГИ</a></div>
+                <div class="H_el_menu"><a href="#reviews">ОТЗЫВЫ</a></div>
+                <div class="H_el_menu"><a href="#apartments">АПАРТАМЕНТЫ</a></div>
+                <div class="H_el_menu"><a href="#question">ВОПРОСЫ</a></div>
+                <div class="H_el_menu"><a href="#contacts">КОНТАКТЫ</a></div>
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+    
+    <div class="Menu">
+        <div class="menu_dop1">
+            <div class="el_menu"><a href="#advantages">ПРЕИМУЩЕСТВА</a></div>
+            <div class="el_menu"><a href="#services">УСЛУГИ</a></div>
+            <div class="el_menu"><a href="#reviews">ОТЗЫВЫ</a></div>
+            <div class="el_menu"><a href="#apartments">АПАРТАМЕНТЫ</a></div>
+            <div class="el_menu"><a href="#question">ВОПРОСЫ</a></div>
+            <div class="el_menu"><a href="#contacts">КОНТАКТЫ</a></div>
+            <div style="clear:both;"></div>
+        </div>
+        <div class="mob_dop">
+            <div class="mob_menu_butt">
+                <div class="mob_butt_text">МЕНЮ</div>
+                <img src="img/click.png" alt="Клик">
+            </div>
+        </div>
+        <div class="DropDown_menu">
+            <div class="mob_el_menu"><a href="#advantages">ПРЕИМУЩЕСТВА</a></div>
+            <div class="mob_el_menu"><a href="#services">УСЛУГИ</a></div>
+            <div class="mob_el_menu"><a href="#reviews">ОТЗЫВЫ</a></div>
+            <div class="mob_el_menu"><a href="#apartments">АПАРТАМЕНТЫ</a></div>
+            <div class="mob_el_menu"><a href="#question">ВОПРОСЫ</a></div>
+            <div class="mob_el_menu"><a href="#contacts">КОНТАКТЫ</a></div>
+        </div>
+    </div>
+    
+    <div class="Main">
+        <div class="M_textBlock">
+            <div class="offer">ЛУЧШИЕ АПАРТАМЕНТЫ<br/><span>В ТАЙЛАНДЕ ПО НИЗКИМ ЦЕНАМ ОТ СОБСТВЕННИКА ЖИЛЬЯ</span></div>
+            <div class="usp">Снимите жильё без переплат и экономьте до 20% от рыночной стоимости + получите дополнительные услуги БЕСПЛАТНО</div>
+        </div>
+        <form action="none">
+            <div class="M_contentForm">
+                <div class="MText">ЗАПОЛНИТЕ И ОТПРАВЬТЕ ЗАЯВКУ<br/><span>МЫ ПЕРЕЗВОНИМ ВАМ В ТЕЧЕНИИ 20 МИНУТ</span></div>
+                <input class="MName MName1 placeholdAnim" placeholder="Введите Ваше имя:"/>
+                <input class="MPhone MPhone1 placeholdAnim" placeholder="Введите Ваш телефон:"/>
+                <div class="MButt" onclick="OrderAp_Main();">ЗАКАЗАТЬ АПАРТАМЕНТЫ</div>
+                <div class="MText2">Гарантируем 100% конфиденциальность данных</div>
+            </div>
+        </form>
+    </div>
+    
+    <div id="advantages">
+        <img class="Adv_fon" src="img/Adv_fon.png" alt="фон">
+        <div class="Adv_head">5 ПРИЧИН ВОСПОЛЬЗОВАТЬСЯ НАШИМИ УСЛУГАМИ</div>
+        <div class="Adv_cont">
+            <div class="Adv_line">
+                <div class="Adv_block Adv_float">
+                    <div class="Adv_img"><img src="img/Adv_img1.png" alt="иллюстрация"></div>
+                    <div class="Adv_text1">НАДЕЖНАЯ КАМПАНИЯ</div>
+                    <div class="Adv_text2">Работаем на рынке с 2013 года и имеем безупречную репутацию. Зарекомендовали себя только с положительной стороны.</div>
+                </div>
+                <div class="Adv_block Adv_float">
+                    <div class="Adv_img"><img src="img/Adv_img2.png" alt="иллюстрация"></div>
+                    <div class="Adv_text1">"ВКУСНЫЕ" АПАРТАМЕНТЫ</div>
+                    <div class="Adv_text2">Вы сами выбираете на сайте апартаменты, которые подходят Вам по визуальным параметрам и цене. Для Вас - все удобства и пляж в шаговой доступности.</div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            <div class="Adv_line">
+                <div class="Adv_block Adv_float">
+                    <div class="Adv_img"><img src="img/Adv_img3.png" alt="иллюстрация"></div>
+                    <div class="Adv_text1">НИЗКИЕ ЦЕНЫ</div>
+                    <div class="Adv_text2">Мы являемся собственниками апартаментов, а не посредниками. Поэтому Вы не переплачиваете за проживание, а получаете самые "сливки" за разумные деньги.</div>
+                </div>
+                <div class="Adv_block Adv_float">
+                    <div class="Adv_img"><img src="img/Adv_img4.png" alt="иллюстрация"></div>
+                    <div class="Adv_text1">ЗАБОТА О ГОСТЯХ</div>
+                    <div class="Adv_text2">Чувствуйте себя в Таиланде, как дома! Мы всегда готовы оказать помощь и поддержку своим клиентам - это Ваша уверенность, спокойствие и комфорт в чужой стране.</div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            <div class="Adv_line2">
+                <div class="Adv_block">
+                    <div class="Adv_img"><img src="img/Adv_img5.png" alt="иллюстрация"></div>
+                    <div class="Adv_text1">ВСЁ ДЛЯ ВАШЕГО УДОБСТВА</div>
+                    <div class="Adv_text2">Развитая инфраструктура, уютные номера со всем необходимым для беззаботного отдыха. Есть как мобильная связь, так и бесплатный интернет (wi-fi)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="services">
+        <div class="Serv_head">ДЛЯ ТЕХ, КТО ХОЧЕТ ОТДОХНУТЬ С КОМФОРТОМ - ДОПОЛНИТЕЛЬНЫЕ УСЛУГИ БЕСПЛАТНО!</div>
+        
+        <div class="Serv_cont">
+            <div class="Serv_line1">
+                <div class="Serv_text1">
+                    ИНДИВИДУАЛЬНЫЙ ТРАНСФЕР
+                    <span><br/>- Вас встретит квалифицированный водитель в аэропорту<br/>- Вам предоставят комфортабельный автомобиль<br/>- Вам помогут с багажом и разместиться в апартаментах</span>
+                </div>
+            </div>
+            <div class="Serv_line2">
+                <div class="Serv_text2">
+                    ПОМОЖЕМ С АВИАБИЛЕТАМИ
+                    <span><br/>- Мы работаем с надежными авиакомпаниями<br/>- Предложим билеты по лучшим ценам<br/>- Поможем оформить билет</span>
+                </div>
+            </div>
+            <div class="Serv_line3">
+                <div class="Serv_text1">
+                    ЛИЧНЫЙ ПРЕДСТАВИТЕЛЬ
+                    <span><br/>- Круглосуточная поддержка по любым вопросам<br/>- Консультации и дружеские советы по организации досуга<br/>- Рекомендации, куда сходить и где провести время</span>
+                </div>
+            </div>
+            <div class="Serv_line4">
+                <div class="Serv_text2">
+                    SIM-КАРТА ДЛЯ СВЯЗИ
+                    <span><br/>- Выдадим Вам SIM-карту местного оператора<br/>- Звоните родным и оставайтесь всегда на связи<br/>- SIM-карта остается Вам, она пригодится для следующего путешествия</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="Serv_cont2">
+            <div class="Serv_line21">
+                <div class="Serv_text21">
+                    ИНДИВИДУАЛЬНЫЙ ТРАНСФЕР
+                    <span><br/>- Вас встретит квалифицированный водитель в аэропорту<br/>- Вам предоставят комфортабельный автомобиль<br/>- Вам помогут с багажом и разместиться в апартаментах</span>
+                </div>
+            </div>
+            <div class="Serv_line22">
+                <div class="Serv_text22">
+                    ПОМОЖЕМ С АВИАБИЛЕТАМИ
+                    <span><br/>- Мы работаем с надежными авиакомпаниями<br/>- Предложим билеты по лучшим ценам<br/>- Поможем оформить билет</span>
+                </div>
+            </div>
+            <div class="Serv_line23">
+                <div class="Serv_text21">
+                    ЛИЧНЫЙ ПРЕДСТАВИТЕЛЬ
+                    <span><br/>- Круглосуточная поддержка по любым вопросам<br/>- Консультации и дружеские советы по организации досуга<br/>- Рекомендации, куда сходить и где провести время</span>
+                </div>
+            </div>
+            <div class="Serv_line24">
+                <div class="Serv_text22">
+                    SIM-КАРТА ДЛЯ СВЯЗИ
+                    <span><br/>- Выдадим Вам SIM-карту местного оператора<br/>- Звоните родным и оставайтесь всегда на связи<br/>- SIM-карта остается Вам, она пригодится для следующего путешествия</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="form1">
+        <div class="F1_head">С НАМИ ВЫ ЭКОНОМИТЕ <span>САМЫЕ ЦЕННЫЕ РЕСУРСЫ - ВРЕМЯ, НЕРВЫ И ДЕНЬГИ.</span></div>
+        <div class="F1_cont">
+            <form action="none">
+                <div class="M_contentForm F1_dopStyle">
+                    <div class="MText">ЗАПОЛНИТЕ И ОТПРАВЬТЕ ЗАЯВКУ<br/><span>МЫ ПЕРЕЗВОНИМ ВАМ В ТЕЧЕНИИ 20 МИНУТ</span></div>
+                    <input class="MName MName2 placeholdAnim" placeholder="Введите Ваше имя:"/>
+                    <input class="MPhone MPhone2 placeholdAnim" placeholder="Введите Ваш телефон:"/>
+                    <div class="MButt" onclick="Order_Form1();">ЗАКАЗАТЬ АПАРТАМЕНТЫ</div>
+                    <div class="MText2">Гарантируем 100% конфиденциальность данных</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="reviews">
+        <div class="Rev_head">ОТЗЫВЫ О НАС</div>
+        <div class="Rev_cont">
+           
+            <div class="Rev">
+                <img class="Rev_float" src="img/Rev1.png" alt="фото">
+                <div class="Rev_text Rev_float">
+                    <div class="Rev_text1">Николай, Москва</div>
+                    <div class="Rev_text2">В Паттайе я третий раз. Полюбился этот город! Последние 2 раза бронировал апартаменты у вас. В первую очередь мне понравился ваш подход и человеческое отношение - всегда можно обратиться с вопросом или за помощью. Ну и само собой, цены на апартаменты на порядок ниже при отличном уровне качества.</div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            <div class="Rev">
+                <img class="Rev_float" src="img/Rev2.png" alt="фото">
+                <div class="Rev_text Rev_float">
+                    <div class="Rev_text1">Софья, Санкт-Петербург</div>
+                    <div class="Rev_text2">Благодарю вашу компанию. За то, что можно выбрать комфортное проживание, за то, что встретили и проводили, даже билеты помогли купить. Я в восторге от отдыха в Таиланде! Паттайя - город радости! За 2 недели я объездила все достопримечательности, магазины, отлично провела время на пляже. Пару раз был дождь, но он не испортил мой отдых, так как рядом с апартаментами есть развлечения на любой вкус. Буду еще обращаться к вам!</div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            <div class="Rev">
+                <img class="Rev_float" src="img/Rev3.png" alt="фото">
+                <div class="Rev_text Rev_float">
+                    <div class="Rev_text1">Сергей и Анна, Краснодар</div>
+                    <div class="Rev_text2">Это наше незабываемое свадебное путешествие! Спасибо вам, что предоставили нам шикарные апартаменты и помогали во всем. Мы проживали в чудесном месте - все в шаговой доступности. В номере была бытовая техника, чисто, тихо и уютно. Мы целый день проводили на море, иногда гуляли по городу. Здесь первый раз попробовали тайский национальный суп Том Ям и блинчики Роти! Также побывали в Храме Истины и в огромном аквапарке.</div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            <div class="Rev">
+                <img class="Rev_float" src="img/Rev4.png" alt="фото">
+                <div class="Rev_text Rev_float">
+                    <div class="Rev_text1">Виктория, Москва</div>
+                    <div class="Rev_text2">Отдыхали с детьми, поэтому спасибо, что встретили нас. Забронировали номер в Lumpini Ville Naklua. Достойные апартаменты! Хорошо обустроена детская площадка - пока мы были там, муж ходил играть в теннис или баскетбол, потом все вместе ходили на пляж, купались и загорали, посетили Большого Будду и деревню Слонов. 20 дней пролетели на одном дыхании. Отдельно благодарю Александра за помощь в организации досуга! </div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <div id="form2">
+        <div class="F2_head">ХОТИТЕ СТАТЬ НАШИМ ДОВОЛЬНЫМ КЛИЕНТОМ?</div>
+        <div class="F2_cont">
+            <form action="none">
+                <div class="M_contentForm F2_dopStyle">
+                    <div class="MText">ЗАПОЛНИТЕ И ОТПРАВЬТЕ ЗАЯВКУ<br/><span>МЫ ПЕРЕЗВОНИМ ВАМ В ТЕЧЕНИИ 20 МИНУТ</span></div>
+                    <input class="MName MName3 placeholdAnim" placeholder="Введите Ваше имя:"/>
+                    <input class="MPhone MPhone3 placeholdAnim" placeholder="Введите Ваш телефон:"/>
+                    <div class="MButt" onclick="Order_Form2();">ЗАКАЗАТЬ АПАРТАМЕНТЫ</div>
+                    <div class="MText2">Гарантируем 100% конфиденциальность данных</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="apartments">
+        <div class="Ap_head">УЮТНО, ЧИСТО И КОМФОРТНО - ВЫБИРАЙТЕ АПАРТАМЕНТЫ НА СВОЙ ВКУС</div>
+        <div class="Ap_cont">
+            <div class="Ap_block">
+                <div class="Ap_text1">Апартаменты №1 – Апаратаменты с 2-мя спальнями и гостиной R-Con Wongamat (130кв метров, размещение 5 взрослых + 1 ребенок)</div>
+                <div class="Ap_text2">1.200 метров от пляжа Паттайи, 15 мин езды до пешеходной улицы.<br/>2. Бесплатный Wi-Fi,  парковка, бассейн.<br/>3. Круглосуточная охрана и видеонаблюдение, рядом рестораны, массажные салоны.<br/>4. В номерах - LED-телевизор, чайник, холодильник, ванная комната с душем, мультиварка, стереосистема.<br/>5. 2 км до торгового центра Central Festival, 500 м до Храма Истины.</div>
+                <div class="Ap_foto">
+                    <div class="Ap_foto1 Ap_float">
+                        <img href="#modal_IMG1" class="open_modal" src="img/Ap_21.jpg" alt="апартаменты">
+                    </div>
+                    <div class="Ap_foto2 Ap_float">
+                        <img href="#modal_IMG2" class="open_modal" src="img/Ap_22.jpg" alt="апартаменты">
+                        <img href="#modal_IMG3" class="Ap_img_middle open_modal" src="img/Ap_23.jpg" alt="апартаменты">
+                        <img href="#modal_IMG4" class="open_modal" src="img/Ap_24.jpg" alt="апартаменты">
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+                <div class="Ap_calc Ap1_calc">
+                    <div class="Ap_text_pole">
+                        c <input class="datepicker-here Ap1_date1" id="Ap1_date1" type="text" placeholder="дд.мм.гггг"/>
+                        до <input class="datepicker-here Ap1_date2" id="Ap1_date2" type="text" placeholder="дд.мм.гггг"/>
+                    </div>
+                    <div class="Ap_butt_pole">
+<!--                        <div class="Ap_Butt12 Ap_float_dop" onclick="Count_costA1();">Посчитать стоимость</div>-->
+                        <div class="Ap_cost Ap1_cost">$--</div>
+                        <div style="clear:both;"></div>
+                    </div>   
+                </div>
+                <div class="Ap_Butt1 Ap1_batt" id="Ap1_Butt1" onclick="Butt_Hide('ap1');">РАССЧИТАЙТЕ СТОИМОСТЬ ПРОЖИВАНИЯ</div>
+                <div href="#modal2" class="Ap_Butt2 open_modal">ЗАКАЗАТЬ АПАРТАМЕНТЫ №1</div>
+            </div>
+            
+            <div class="Ap_block">
+                <div class="Ap_text1">Апартаменты №2 – Апартаменты-студия Lumpini Ville Naklua (27кв метров, размещение 2-х взрослых + 1 ребенок)</div>
+                <div class="Ap_text2">1. Комплекс из 3-х зданий, в 10 мин ходьбы от пляжа Вонг-Амат.<br/>2. Тренажерный зал, бассейн, парковка, круглосуточный магазин.<br/>3. Круглосуточная охрана и видеонаблюдение, рядом рестораны, массажные салоны.<br/>4. В номерах - wi-fi, телевизор, кондиционер, холодильник, микроволновка, чайник.<br/>5. Детская и баскетбольная площадка, настольный теннис, библиотека.</div>
+                <div class="Ap_foto">
+                    <div class="Ap_foto1 Ap_float">
+                        <img href="#modal_IMG5" class="open_modal" src="img/Ap_11.jpg" alt="апартаменты">
+                    </div>
+                    <div class="Ap_foto2 Ap_float">
+                        <img href="#modal_IMG6" class="open_modal" src="img/Ap_12.jpg" alt="апартаменты">
+                        <img href="#modal_IMG7" class="Ap_img_middle open_modal" src="img/Ap_13.jpg" alt="апартаменты">
+                        <img href="#modal_IMG8" class="open_modal" src="img/Ap_14.jpg" alt="апартаменты">
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+                <div class="Ap_calc Ap2_calc">
+                    <div class="Ap_text_pole">
+                        c <input class="datepicker-here Ap2_date1" id="Ap2_date1" type="text" placeholder="дд.мм.гггг"/>
+                        до <input class="datepicker-here Ap2_date2" id="Ap2_date2" type="text" placeholder="дд.мм.гггг"/>
+                    </div>
+                    <div class="Ap_butt_pole">
+<!--                        <div class="Ap_Butt12 Ap_float_dop" onclick="Count_cost('ap2');">Посчитать стоимость</div>-->
+                        <div class="Ap_cost Ap2_cost Ap_float_dop">$--</div>
+                        <div style="clear:both;"></div>
+                    </div>   
+                </div>
+                <div class="Ap_Butt1 Ap2_batt" id="Ap2_Butt1" onclick="Butt_Hide('ap2');">РАССЧИТАЙТЕ СТОИМОСТЬ ПРОЖИВАНИЯ</div>
+                <div href="#modal3" class="Ap_Butt2 open_modal">ЗАКАЗАТЬ АПАРТАМЕНТЫ №2</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="question">
+        <div class="Que_head">ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ</div>
+        <div class="Que_cont">
+            <div class="Que_text">КАК ДОБРАТЬСЯ ДО АПАРТАМЕНТОВ ИЗ АЭРОПОРТА?<br/><span>По прилету в Таиланд Вас будет встречать водитель с табличкой с Вашем именем. Вам не нужно его ожидать, он уже будет в аэропорту к Вашему прилету. Водитель доставит Вас к месту назначения на комфортабельном автомобиле. Услуга бесплатная - платить водителю ничего не нужно!</span></div>
+            <div class="Que_text">КАКОЕ РАССТОЯНИЕ ОТ АПАРТАМЕНТОВ ДО МОРЯ?<br/><span>Все наши апартаменты находятся в шаговой доступности от моря.</span></div>
+            <div class="Que_text">КАК Я МОГУ ЗАБРОНИРОВАТЬ АПАРТАМЕНТЫ?<br/><span>Вы оставляете заявку на сайте, после чего наш менеджер перезвонит Вам. Вы озвучиваете, какие апартаменты выбрали и на сколько дней. Менеджер говорит стоимость за проживание. После этого Вам необходимо внести предоплату, и апартаменты остаются за Вами. Приезжайте и заселяйтесь.</span></div>
+            <div class="Que_text">ПОЧЕМУ У ВАС ДЕШЕВЛЕ, В ЧЕМ ПОДВОХ?<br/><span>Подвоха никакого нет, а дешевле, потому что мы являемся собственниками жилья. Заказывая жилье у нас, вы делаете это напрямую без посредников. Благодаря этому наши цены действительно дешевле, чем у других.</span></div>
+            <div class="Que_text">НЕ ПОТРЕБУЕТЕ ЛИ ВЫ ПОТОМ ДОПОЛНИТЕЛЬНЫХ ДЕНЕГ ЗА ЖИЛЬЕ?<br/><span>Нет. У нас отсутствуют скрытые комиссии и прочие платежи. Все, что мы указали на сайте, как дополнительные услуги - бесплатны, при условии, если Вы бронируете апартаменты у нас. Единственный нюанс, когда нужно доплачивать - это, если Вы захотите продлить пребывание в апартаментах.</span></div>
+            <div class="Que_text">КАК Я МОГУ ОПЛАТИТЬ АПАРТАМЕНТЫ?<br/><span>Вы можете внести передоплату или полную стоимость за апартаменты на карту Сбербанка, воспользоваться системой перевода денег Western Union или электронными валютами WebMoney, Skrill, ePayments, Яндекс деньги, Qiwi кошелек. При внесении предоплаты вышеуказанными способами оставшуюся часть Вы можете оплатить наличными при заселении.</span></div>
+            <div class="Que_text">КАКУЮ ПРЕДОПЛАТУ НУЖНО ВНЕСТИ?<br/><span>Минимальная сумма предоплаты - 30%.</span></div>         
+        </div>
+    </div>
+    
+    <div id="form3">
+        <div class="F3_head1">ХОТИТЕ ПРОВЕСТИ НЕЗАБЫВАЕМЫЙ ОТДЫХ В ТАИЛАНДЕ БЕЗ ПОСРЕДНИКОВ И ПЕРЕПЛАТ?</div>
+        <div class="F3_head2">Тогда закажите апартаменты у нас и наслаждайтесь!</div>
+        <div class="F3_cont">
+            <form action="none">
+                <div class="M_contentForm F3_dopStyle">
+                    <div class="MText F3_dopStyle2">ЗАПОЛНИТЕ И ОТПРАВЬТЕ ЗАЯВКУ<br/><span>МЫ ПЕРЕЗВОНИМ ВАМ В ТЕЧЕНИИ 20 МИНУТ</span></div>
+                    <input class="MName MName4 placeholdAnim" placeholder="Введите Ваше имя:"/>
+                    <input class="MPhone MPhone4 placeholdAnim" placeholder="Введите Ваш телефон:"/>
+                    <div class="MButt" onclick="Order_Form3();">ЗАКАЗАТЬ АПАРТАМЕНТЫ</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="contacts" class="contacts">
+        <div class="Cont_text_mob">
+            <div class="Cont_text1_mob">Контакты</div>
+            <div class="Cont_text4_mob">Россия, г.Ханты-Мансийск, ул.Комсомольская, д.63, почтовый индекс: 628011</div>
+            <div class="Cont_text2_mob"><b>8(937)000-00-20</b></div>
+<!--            <div class="Cont_text3_mob"><b>8(985)440-91-11</b></div>-->
+        </div>
+        <div class="Cont_maps">
+            <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A737b50d78d3a08a4f0c04d688e4ac08b291305d620cee9d1b12523cde95d89c2&amp;width=100%25&amp;height=550&amp;lang=ru_RU&amp;scroll=true"></script>
+        </div>
+        <div class="Cont_text">
+            <div class="Cont_text1">Контакты</div>
+            <div class="Cont_text4">Россия, г.Ханты-Мансийск, ул.Комсомольская, д.63, почтовый индекс: 628011</div>
+            <div class="Cont_text2"><b>8(937)000-00-20</b></div>
+<!--            <div class="Cont_text3"><b>8(985)440-91-11</b></div>-->
+        </div>
+    </div>
+    
+    <div id="footer">
+        <div class="Head_content">
+            <div class="Head_left">
+                <a href="#"><img src="img/logotip.png" alt="логотип"></a>
+            </div>
+            <div class="Head_right">
+                <div class="Head_numbers">8(937)000-00-20</div>
+                <div class="Head_butt"><a href="#modal5" class="open_modal">ЗАКАЗАТЬ ОБРАТНЫЙ ЗВОНОК</a></div>
+            </div>
+            <div class="Footer_menu">
+                <div class="FootM_dop">
+                    <div class="FooM_L FooM_float">
+                        <div class="H_el_menu2"><a href="#advantages">ПРЕИМУЩЕСТВА</a></div>
+                        <div class="H_el_menu2"><a href="#services">УСЛУГИ</a></div>
+                        <div class="H_el_menu2"><a href="#reviews">ОТЗЫВЫ</a></div>
+                    </div>
+                    <div class="FooM_R FooM_float">
+                        <div class="H_el_menu2"><a href="#apartments">АПАРТАМЕНТЫ</a></div>
+                        <div class="H_el_menu2"><a href="#question">ВОПРОСЫ</a></div>
+                        <div class="H_el_menu2"><a href="#contacts">КОНТАКТЫ</a></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+    
+    
+    <!--Модальные окна-->
+    <div id="modal1" class="modal_div">
+        <div id="mod1_dop">
+	        <img class="modal_close" src="img/close_modal.png" alt="закрыть">
+            <div class="M1_info">Спасибо!<br/><br/>Мы перезвоним Вам в течении 20 минут!</div>
+        </div>
+    </div>
+    
+    <div id="modal2" class="modal_div">
+        <div id="mod2_dop">
+            <img class="modal_close" src="img/close_modal.png" alt="закрыть">
+            <div class="M2_info">Спасибо!<br/><br/>Мы перезвоним Вам в течении 20 минут!</div>
+            <form id="send_header2">
+                <div class="Mod_contentForm">
+                    <input type="text" class="formTxtPole Mod2_Name ModName placeholdAnim" placeholder="Ваше имя:"/><br/>
+                    <input type="text" class="formTxtPole Mod2_Phone ModPhone placeholdAnim" placeholder="Ваш телефон:"/>
+                    <div class="ModButt" onclick="Order_apart1();">Заказать апартаменты №1</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="modal3" class="modal_div">
+        <div id="mod3_dop">
+            <img class="modal_close" src="img/close_modal.png" alt="закрыть">
+            <div class="M3_info">Спасибо!<br/><br/>Мы перезвоним Вам в течении 20 минут!</div>
+            <form id="send_header3">
+                <div class="Mod_contentForm">
+                    <input type="text" class="formTxtPole Mod3_Name ModName placeholdAnim" placeholder="Ваше имя:"/><br/>
+                    <input type="text" class="formTxtPole Mod3_Phone ModPhone placeholdAnim" placeholder="Ваш телефон:"/>
+                    <div class="ModButt" onclick="Order_apart2();">Заказать апартаменты №2</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="modal4" class="modal_div">
+        <div id="mod4_dop">
+            <img class="modal_close" src="img/close_modal.png" alt="закрыть">
+            <div class="M4_info">Спасибо!<br/><br/>Мы перезвоним Вам в течении 20 минут!</div>
+            <form id="send_header4">
+                <div class="Mod_contentForm">
+                    <input type="text" class="formTxtPole Mod4_Name ModName placeholdAnim" placeholder="Ваше имя:"/><br/>
+                    <input type="text" class="formTxtPole Mod4_Phone ModPhone placeholdAnim" placeholder="Ваш телефон:"/>
+                    <div class="ModButt" onclick="OrderCall_header();">ЗАКАЗАТЬ ОБРАТНЫЙ ЗВОНОК</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="modal5" class="modal_div">
+        <div id="mod5_dop">
+            <img class="modal_close" src="img/close_modal.png" alt="закрыть">
+            <div class="M5_info">Спасибо!<br/><br/>Мы перезвоним Вам в течении 20 минут!</div>
+            <form id="send_header5">
+                <div class="Mod_contentForm">
+                    <input type="text" class="formTxtPole Mod5_Name ModName placeholdAnim" placeholder="Ваше имя:"/><br/>
+                    <input type="text" class="formTxtPole Mod5_Phone ModPhone placeholdAnim" placeholder="Ваш телефон:"/>
+                    <div class="ModButt" onclick="OrderCall_footer();">ЗАКАЗАТЬ ОБРАТНЫЙ ЗВОНОК</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!--Модальные окна для изображений-->
+    <div id="modal_IMG1" class="modal_div_IMG">
+            <img src="img/Ap_21_max.jpg" alt="апартаменты №1">
+    </div>
+    
+    <div id="modal_IMG2" class="modal_div_IMG img_2">
+            <img id="ModImg_1" src="img/Ap_22_max.jpg" alt="апартаменты №1">
+    </div>
+    
+    <div id="modal_IMG3" class="modal_div_IMG">
+            <img src="img/Ap_23_max.jpg" alt="апартаменты №1">
+    </div>
+    
+    <div id="modal_IMG4" class="modal_div_IMG">
+            <img src="img/Ap_24_max.jpg" alt="апартаменты №1">
+    </div>
+    
+    <div id="modal_IMG5" class="modal_div_IMG">
+            <img id="ModImg_2" src="img/Ap_11_max.jpg" alt="апартаменты №2">
+    </div>
+    
+    <div id="modal_IMG6" class="modal_div_IMG">
+            <img src="img/Ap_12_max.jpg" alt="апартаменты №2">
+    </div>
+    
+    <div id="modal_IMG7" class="modal_div_IMG">
+            <img id="ModImg_3" src="img/Ap_13_max.jpg" alt="апартаменты №2">
+    </div>
+    
+    <div id="modal_IMG8" class="modal_div_IMG">
+            <img src="img/Ap_14_max.jpg" alt="апартаменты №2">
+    </div>
+    
+    
+    <!-- Подложка только одна -->
+    <div id="overlay"></div>
+    <!--Ссылка пустышка для запуска модального окна-->
+    <a id="StartLink_mod" href="#modal1" class="open_modal"></a>
+    
+    
+</body>
+</html>
